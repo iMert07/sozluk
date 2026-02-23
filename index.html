@@ -51,6 +51,7 @@
                             <h1 class="text-xl font-bold" data-key="title"></h1>
                         </div>
                         <nav class="hidden md:flex items-center gap-8">
+                            <a class="text-base font-medium hover:text-primary transition-colors cursor-pointer" onclick="showKelimelerPage()">Kelimeler</a>
                             <a class="text-base font-medium hover:text-primary transition-colors cursor-pointer" href="https://cevirici.vercel.app/" target="_blank" data-key="about_page_text"></a>
                             <a class="text-base font-medium hover:text-primary transition-colors cursor-pointer" onclick="toggleFeedbackForm()" data-key="feedback_button_text"></a>
                         </nav>
@@ -83,6 +84,7 @@
                 </div>
             </div>
             <div id="mobile-menu" class="md:hidden hidden bg-subtle-light dark:bg-subtle-dark border-b border-subtle-light dark:border-subtle-dark py-2 px-4">
+                <a class="block text-base font-medium hover:text-primary transition-colors cursor-pointer px-4 py-2" onclick="showKelimelerPage(); toggleMobileMenu();">Kelimeler</a>
                 <a class="block text-base font-medium hover:text-primary transition-colors cursor-pointer px-4 py-2" href="https://cevirici.vercel.app/" target="_blank" data-key="about_page_text"></a>
                 <a class="block text-base font-medium hover:text-primary transition-colors cursor-pointer px-4 py-2" onclick="toggleFeedbackForm(); toggleMobileMenu();" data-key="feedback_button_text"></a>
             </div>
@@ -90,6 +92,7 @@
 
         <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
             <div id="home-content" class="max-w-4xl mx-auto">
+                
                 <div class="relative mb-8 md:mb-12">
                     <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
                         <svg class="h-5 w-5 sm:h-6 sm:w-6 text-primary" fill="currentColor" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
@@ -100,6 +103,16 @@
                     <div id="suggestions-container" class="absolute top-full left-0 right-0 z-10 mt-2 rounded-lg sm:rounded-xl bg-subtle-light dark:bg-subtle-dark border border-subtle-light dark:border-subtle-dark shadow-lg hidden">
                         <div id="suggestions" class="max-h-[20rem] overflow-y-auto p-2"></div>
                     </div>
+                </div>
+
+                <div id="alphabet-section" class="hidden">
+                    <div id="alphabet-menu" class="mb-8 p-6 bg-subtle-light dark:bg-subtle-dark rounded-xl shadow-sm border border-subtle-light dark:border-subtle-dark">
+                        <div id="alphabet-list" class="flex flex-wrap justify-center gap-2"></div>
+                    </div>
+
+                    <div id="letter-results" class="mb-8 grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+
+                    <div id="alphabet-pagination" class="mt-8 flex flex-wrap justify-center items-center gap-4 py-8 border-t border-subtle-light dark:border-subtle-dark hidden"></div>
                 </div>
 
                 <div id="welcome-box" class="mb-6 p-6 bg-subtle-light dark:bg-subtle-dark rounded-lg sm:rounded-xl border-l-4 border-primary shadow-sm">
