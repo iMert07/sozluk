@@ -70,7 +70,6 @@ function selectWord(wordData, pText) {
     
     showResult(wordData);
 
-    // Seçilen kelimenin detayına (listenin altına) kaydır
     setTimeout(() => {
         const resultDiv = document.getElementById('result');
         if (resultDiv) {
@@ -104,7 +103,7 @@ function renderAlphabet() {
         btn.innerText = isGreek ? convertToGreek(harf) : harf;
         btn.onclick = () => {
             currentSelectedLetter = harf;
-            document.getElementById('result').innerHTML = ''; // Yeni harf seçince detayı temizle
+            document.getElementById('result').innerHTML = '';
             showLetterResults(harf, 0);
         };
         list.appendChild(btn);
@@ -142,6 +141,7 @@ function showLetterResults(harf, page, showAll = false) {
                 pBtn.innerText = i + 1;
                 pBtn.onclick = () => { 
                     showLetterResults(harf, i);
+                    // Sayfa değiştirince listeyi başa al
                     document.getElementById('alphabet-menu').scrollIntoView({ behavior: 'smooth' });
                 };
                 pagDiv.appendChild(pBtn);
@@ -153,8 +153,8 @@ function showLetterResults(harf, page, showAll = false) {
             toggleBtn.className = "px-6 py-2 rounded-lg bg-primary/10 text-primary border border-primary/20 font-bold text-sm hover:bg-primary hover:text-white transition-all ml-4 select-none";
             toggleBtn.innerText = showAll ? "Daralt" : "Tümünü Göster";
             toggleBtn.onclick = () => { 
+                // Tümünü göster/daralt yapınca başa kaydırmayı kaldırdık!
                 showLetterResults(harf, 0, !showAll);
-                document.getElementById('alphabet-menu').scrollIntoView({ behavior: 'smooth' });
             };
             pagDiv.appendChild(toggleBtn);
         }
