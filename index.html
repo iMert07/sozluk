@@ -52,6 +52,7 @@
                         </div>
                         <nav class="hidden md:flex items-center gap-8">
                             <a class="text-base font-medium hover:text-primary transition-colors cursor-pointer" onclick="showKelimelerPage()" data-key="nav_words"></a>
+                            <a class="text-base font-medium hover:text-primary transition-colors cursor-pointer" onclick="showEtyPage()" data-key="nav_ety"></a>
                             <a class="text-base font-medium hover:text-primary transition-colors cursor-pointer" onclick="showStatsPage()" data-key="nav_stats"></a>
                             <a class="text-base font-medium hover:text-primary transition-colors cursor-pointer" href="https://cevirici.vercel.app/" target="_blank" data-key="about_page_text"></a>
                             <a class="text-base font-medium hover:text-primary transition-colors cursor-pointer" onclick="toggleFeedbackForm()" data-key="feedback_button_text"></a>
@@ -86,6 +87,7 @@
             </div>
             <div id="mobile-menu" class="md:hidden hidden bg-subtle-light dark:bg-subtle-dark border-b border-subtle-light dark:border-subtle-dark py-2 px-4">
                 <a class="block text-base font-medium hover:text-primary transition-colors cursor-pointer px-4 py-2" onclick="showKelimelerPage(); toggleMobileMenu();" data-key="nav_words"></a>
+                <a class="block text-base font-medium hover:text-primary transition-colors cursor-pointer px-4 py-2" onclick="showEtyPage(); toggleMobileMenu();" data-key="nav_ety"></a>
                 <a class="block text-base font-medium hover:text-primary transition-colors cursor-pointer px-4 py-2" onclick="showStatsPage(); toggleMobileMenu();" data-key="nav_stats"></a>
                 <a class="block text-base font-medium hover:text-primary transition-colors cursor-pointer px-4 py-2" href="https://cevirici.vercel.app/" target="_blank" data-key="about_page_text"></a>
                 <a class="block text-base font-medium hover:text-primary transition-colors cursor-pointer px-4 py-2" onclick="toggleFeedbackForm(); toggleMobileMenu();" data-key="feedback_button_text"></a>
@@ -94,7 +96,6 @@
 
         <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
             <div id="home-content" class="max-w-4xl mx-auto">
-                
                 <div class="relative mb-8 md:mb-12">
                     <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
                         <svg class="h-5 w-5 sm:h-6 sm:w-6 text-primary" fill="currentColor" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
@@ -117,6 +118,10 @@
 
                 <div id="stats-section" class="hidden">
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4" id="stats-container"></div>
+                </div>
+
+                <div id="ety-section" class="hidden">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="ety-container"></div>
                 </div>
 
                 <div id="welcome-box" class="mb-6 p-6 bg-subtle-light dark:bg-subtle-dark rounded-lg sm:rounded-xl border-l-4 border-primary shadow-sm">
