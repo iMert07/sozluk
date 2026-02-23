@@ -8,7 +8,7 @@ let etySortConfig = { key: 'label', direction: 'asc' };
 
 const PAGE_SIZE = 36;
 const customAlphabet = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVX YZ".split("");
-const latinToGreekMap = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","Q":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
+const latinToGreekMap = { "a":"Α","A":"Α", "e":"Ε","E":"Ε", "i":"Ͱ","İ":"Ͱ", "n":"Ν","N":"Ν", "r":"Ρ","R":"Ρ", "l":"L","L":"L", "ı":"Ь","I":"Ь", "k":"Κ","K":"Κ", "d":"D","D":"D", "m":"Μ","M":"Μ", "t":"Τ","T":"Τ", "y":"R","Y":"R", "s":"S","S":"S", "u":"U","U":"U", "o":"Q","O":"Q", "b":"Β","B":"Β", "ş":"Ш","Ş":"Ш", "ü":"Υ","Ü":"Υ", "z":"Ζ","Z":"Ζ", "g":"G","G":"G", "ç":"C","Ç":"C", "ğ":"Γ","Ğ":"Γ", "v":"V","V":"V", "c":"J","C":"J", "h":"Η","H":"Η", "p":"Π","P":"Π", "ö":"Ω","Ö":"Ω", "f":"F","F":"F", "x":"Ψ","X":"Ψ", "j":"Σ","J":"Σ", "0":"θ" };
 
 const translations = { 
     'tr': { 
@@ -81,7 +81,7 @@ function showPage(pageId) {
     }
 }
 
-// --- 3. KÖKEN DAĞILIMI (TAMAMEN DÜZELTİLMİŞ) ---
+// --- 3. KÖKEN DAĞILIMI (GELİŞTİRİLMİŞ) ---
 function renderEtymologyStats() {
     const container = document.getElementById('ety-container');
     if (!container) return;
@@ -98,23 +98,12 @@ function renderEtymologyStats() {
 
         if (etyText !== "") {
             if (etyText.toLowerCase().includes("kökenli")) {
-                // "kökenli"den sonrasını blok olarak al
                 let parts = etyText.split(/kökenli/i);
                 let after = parts[parts.length - 1].trim();
-                
-                if (after !== "") {
-                    origin = after;
-                } else {
-                    // "kökenli" ile bitiyorsa, öncesindeki son kelimeyi al
-                    let before = parts[parts.length - 2].trim();
-                    origin = before.split(" ").pop();
-                }
+                origin = after !== "" ? after : parts[parts.length - 2].trim().split(" ").pop();
             } else {
-                // "kökenli" geçmiyorsa direkt son kelimeye/tamlamaya bak
                 origin = etyText;
             }
-            
-            // "Türkçe" kelimesini "Türkçe (Melez)"e çevir
             if (origin.toLowerCase() === "türkçe") origin = "Türkçe (Melez)";
         }
         etyMap[origin] = (etyMap[origin] || 0) + 1;
@@ -137,24 +126,28 @@ function renderEtymologyStats() {
                 <button onclick="setEtySort('label')" class="px-4 py-2 rounded-xl font-bold text-[11px] uppercase tracking-widest transition-all ${etySortConfig.key === 'label' ? 'bg-primary text-white shadow-md' : 'opacity-50 hover:opacity-100'}">${isGreek ? convertToGreek('Dil') : 'Dil'}</button>
                 <button onclick="setEtySort('count')" class="px-4 py-2 rounded-xl font-bold text-[11px] uppercase tracking-widest transition-all ${etySortConfig.key === 'count' ? 'bg-primary text-white shadow-md' : 'opacity-50 hover:opacity-100'}">${isGreek ? convertToGreek('Adet') : 'Adet'}</button>
                 <div class="h-8 w-[1px] bg-foreground-light/10 dark:bg-foreground-dark/10 mx-1"></div>
-                <button onclick="toggleEtyDirection()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-primary text-white shadow-md"><span class="text-xl font-bold">${etySortConfig.direction === 'asc' ? '↓' : '↑'}</span></button>
+                <button onclick="toggleEtyDirection()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-primary text-white shadow-md">
+                    <span class="text-xl font-bold">${etySortConfig.direction === 'asc' ? '↓' : '↑'}</span>
+                </button>
             </div>
         </div>
     `;
 
     etyData.forEach(item => {
         const box = document.createElement('div');
-        box.className = "bg-subtle-light dark:bg-subtle-dark rounded-xl border border-subtle-light dark:border-subtle-dark overflow-hidden shadow-sm select-none hover:border-primary/50 transition-colors";
+        box.className = "bg-subtle-light dark:bg-subtle-dark rounded-xl border border-subtle-light dark:border-subtle-dark overflow-hidden shadow-sm select-none hover:border-primary/50 transition-colors flex flex-col h-full";
         box.innerHTML = `
-            <div class="bg-primary text-white text-center py-2 font-bold text-sm truncate px-2">${isGreek ? convertToGreek(item.label) : item.label}</div>
-            <div class="flex divide-x divide-subtle-light dark:divide-subtle-dark text-center">
-                <div class="flex-1 py-3 leading-tight">
-                    <p class="text-[10px] opacity-50 uppercase font-bold mb-1">${isGreek ? convertToGreek('Adet') : 'Adet'}</p>
-                    <p class="text-lg font-bold text-primary">${item.count}</p>
+            <div class="bg-primary text-white text-center py-2 px-1 font-bold text-[13px] sm:text-sm break-words leading-tight flex items-center justify-center min-h-[44px]">
+                ${isGreek ? convertToGreek(item.label) : item.label}
+            </div>
+            <div class="flex divide-x divide-subtle-light dark:divide-subtle-dark text-center mt-auto">
+                <div class="flex-1 py-2 leading-tight">
+                    <p class="text-[9px] opacity-50 uppercase font-bold mb-0.5">${isGreek ? convertToGreek('Adet') : 'Adet'}</p>
+                    <p class="text-base font-bold text-primary">${item.count}</p>
                 </div>
-                <div class="flex-1 py-3 leading-tight">
-                    <p class="text-[10px] opacity-50 uppercase font-bold mb-1">${isGreek ? convertToGreek('Oran') : 'Oran'}</p>
-                    <p class="text-lg font-bold">%${item.percent}</p>
+                <div class="flex-1 py-2 leading-tight">
+                    <p class="text-[9px] opacity-50 uppercase font-bold mb-0.5">${isGreek ? convertToGreek('Oran') : 'Oran'}</p>
+                    <p class="text-base font-bold">%${item.percent}</p>
                 </div>
             </div>
         `;
@@ -165,7 +158,7 @@ function renderEtymologyStats() {
 function setEtySort(key) { etySortConfig.key = key; renderEtymologyStats(); }
 function toggleEtyDirection() { etySortConfig.direction = etySortConfig.direction === 'asc' ? 'desc' : 'asc'; renderEtymologyStats(); }
 
-// --- 4. HARF DAĞILIMI (YÜZDELİ & GENİŞLETİLMİŞ) ---
+// --- 4. HARF DAĞILIMI (YÜZDELİ) ---
 function renderAlphabetStats() {
     const container = document.getElementById('stats-container');
     if (!container) return;
