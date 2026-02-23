@@ -96,6 +96,10 @@ function renderAlphabet() {
     const list = document.getElementById('alphabet-list');
     if (!list) return;
     list.innerHTML = "";
+    
+    // Bilgisayarda (md) 10 sütun (3x10), mobilde 5 sütun (6x5) düzeni
+    list.className = "grid grid-cols-5 md:grid-cols-10 gap-2 justify-items-center";
+
     customAlphabet.forEach(harf => {
         if(harf === " ") return;
         const btn = document.createElement('button');
@@ -141,7 +145,6 @@ function showLetterResults(harf, page, showAll = false) {
                 pBtn.innerText = i + 1;
                 pBtn.onclick = () => { 
                     showLetterResults(harf, i);
-                    // Sayfa değiştirince listeyi başa al
                     document.getElementById('alphabet-menu').scrollIntoView({ behavior: 'smooth' });
                 };
                 pagDiv.appendChild(pBtn);
@@ -153,7 +156,6 @@ function showLetterResults(harf, page, showAll = false) {
             toggleBtn.className = "px-6 py-2 rounded-lg bg-primary/10 text-primary border border-primary/20 font-bold text-sm hover:bg-primary hover:text-white transition-all ml-4 select-none";
             toggleBtn.innerText = showAll ? "Daralt" : "Tümünü Göster";
             toggleBtn.onclick = () => { 
-                // Tümünü göster/daralt yapınca başa kaydırmayı kaldırdık!
                 showLetterResults(harf, 0, !showAll);
             };
             pagDiv.appendChild(toggleBtn);
