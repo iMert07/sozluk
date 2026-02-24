@@ -61,11 +61,17 @@ function updateThemeIcons() {
     document.getElementById('theme-toggle-light-icon')?.classList.toggle('hidden', !isDark);
 }
 
-// --- 2. GEÇMİŞ YÖNETİMİ ---
+// --- 2. GEÇMİŞ YÖNETİMİ (GÜNCELLENDİ) ---
 function addToHistory(wordData, clickedText, subText = null) {
+    // Aynı kelime (clickedText bazlı) listede varsa sil (yeniden en başa eklemek için)
     searchHistory = searchHistory.filter(h => h.clickedText !== clickedText);
+    
+    // Yeni veriyi listenin başına ekle
     searchHistory.unshift({ wordData, clickedText, subText });
+    
+    // Maksimum 12 adet tut
     if (searchHistory.length > 12) searchHistory.pop();
+    
     localStorage.setItem('orum_history', JSON.stringify(searchHistory));
 }
 
@@ -80,7 +86,7 @@ function renderHistory() {
         const display = isGreek ? convertToGreek(item.clickedText) : item.clickedText;
         const subDisplay = item.subText ? (isGreek ? convertToGreek(item.subText) : item.subText) : '';
         d.innerHTML = `<span class="font-bold">${display}</span>${item.subText ? `<span class="opacity-30 ml-2">${subDisplay}</span>` : ''}`;
-        d.onclick = () => selectWord(item.wordData, item.clickedText, true, item.subText);
+        d.onclick = () => selectWord(item.wordData, item.clickedText, false, item.subText); // false yaparak tekrar addToHistory'ye girmesini sağlıyoruz
         div.appendChild(d);
     });
     cont.classList.remove('hidden');
@@ -108,7 +114,6 @@ function setupSearch() {
         displaySuggestions(matches, q);
     });
 
-    // Dışarı tıklayınca kapatma (Takılmayı önler)
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.relative')) container.classList.add('hidden');
     });
@@ -152,19 +157,21 @@ function displaySuggestions(matches, q) {
     cont.classList.remove('hidden');
 }
 
-function selectWord(wordData, pText, fromHistory = false, subText = null) { 
+function selectWord(wordData, pText, forceNoHistory = false, subText = null) { 
     lastSelectedWord = wordData; 
     document.getElementById('searchInput').value = isGreek ? convertToGreek(pText) : pText; 
     document.getElementById('suggestions-container').classList.add('hidden'); 
     
-    if (!fromHistory) addToHistory(wordData, pText, subText);
+    // Eğer geçmişten çağırılsa bile (forceNoHistory=false) addToHistory'ye gönderiyoruz 
+    // Böylece addToHistory içindeki filtreleme sayesinde en başa taşınıyor.
+    if (!forceNoHistory) addToHistory(wordData, pText, subText);
     
     hideAllSections();
     showResult(wordData); 
     setTimeout(() => { document.getElementById('result')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100); 
 }
 
-// --- 4. DİĞER FONKSİYONLAR (STAT, ALFABE VB.) ---
+// --- 4. DİĞER FONKSİYONLAR ---
 function hideAllSections() {
     ['welcome-box', 'stats-card', 'alphabet-section', 'stats-section', 'ety-section'].forEach(id => {
         document.getElementById(id)?.classList.add('hidden');
@@ -216,6 +223,9 @@ function renderEtymologyStats() {
         container.appendChild(box);
     });
 }
+
+function setEtySort(key) { etySortConfig.key = key; renderEtymologyStats(); }
+function toggleEtyDirection() { etySortConfig.direction = etySortConfig.direction === 'asc' ? 'desc' : 'asc'; renderEtymologyStats(); }
 
 function renderAlphabetStats() {
     const container = document.getElementById('stats-container'); if (!container) return;
