@@ -8,7 +8,6 @@
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
     <link href="https://fonts.googleapis.com/css2?family=Clear+Sans:wght@400;700&display=swap" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link rel="stylesheet" href="style.css">
     <script>
         tailwind.config = {
             darkMode: "class",
@@ -139,16 +138,29 @@
         </main>
     </div>
 
-    <div id="feedbackModal" class="fixed inset-0 z-50 bg-background-light/90 dark:bg-background-dark/90 flex items-center justify-center hidden">
-        <div class="relative w-full max-w-2xl mx-auto p-6 sm:p-8 bg-subtle-light dark:bg-subtle-dark rounded-lg sm:rounded-xl shadow-xl">
+    <div id="feedbackModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 hidden">
+        <div class="bg-white dark:bg-subtle-dark w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border border-subtle-light dark:border-subtle-dark p-6 relative">
             <button class="absolute top-4 right-4 p-2 rounded-full hover:bg-background-light dark:hover:bg-background-dark transition-colors" onclick="toggleFeedbackForm()">
                 <svg class="w-6 h-6 text-muted-light dark:text-muted-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
-            <h2 class="text-2xl font-bold mb-4" data-key="feedback_title"></h2>
-            <textarea id="feedbackText" class="w-full h-40 p-3 bg-background-light dark:bg-background-dark border-0 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none placeholder:text-muted-light dark:placeholder:text-muted-dark" data-key="feedback_placeholder"></textarea>
-            <div class="flex justify-end gap-2 mt-4">
-                <button class="px-4 py-2 rounded-lg sm:rounded-xl bg-muted-light text-foreground-light dark:bg-muted-dark dark:text-foreground-dark hover:bg-muted-dark hover:text-white transition-colors" onclick="toggleFeedbackForm()" data-key="feedback_cancel"></button>
-                <button class="px-4 py-2 rounded-lg sm:rounded-xl bg-primary text-white hover:bg-primary/80 transition-colors" onclick="submitFeedback()" data-key="feedback_send"></button>
+            
+            <h2 class="text-2xl font-bold mb-6 text-primary" data-key="feedback_title">Geri Bildirim</h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-bold opacity-70 mb-1">Mesajınız *</label>
+                    <textarea id="feedback-message" rows="4" class="w-full p-3 bg-background-light dark:bg-background-dark border-0 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none placeholder:text-muted-light dark:placeholder:text-muted-dark" data-key="feedback_placeholder" placeholder="Mesajınız..."></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold opacity-70 mb-1">Size nasıl ulaşabilirim? (İsteğe bağlı)</label>
+                    <input type="text" id="feedback-contact" class="w-full p-3 bg-background-light dark:bg-background-dark border-0 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none placeholder:text-muted-light dark:placeholder:text-muted-dark" placeholder="E-posta veya telefon...">
+                </div>
+            </div>
+
+            <div class="flex gap-3 mt-6">
+                <button class="flex-1 px-4 py-3 rounded-xl font-bold bg-muted-light/20 dark:bg-muted-dark/20 hover:bg-muted-light/40 transition-colors" onclick="toggleFeedbackForm()" data-key="feedback_cancel">İptal</button>
+                <button class="flex-1 px-4 py-3 rounded-xl font-bold bg-primary text-white hover:bg-primary/80 transition-colors shadow-lg shadow-primary/30" onclick="submitFeedback()" data-key="feedback_send">Gönder</button>
             </div>
         </div>
     </div>
