@@ -168,8 +168,8 @@ function hideAllSections() {
 }
 
 function showPage(pageId) {
+    hideAllSections();
     if (pageId === 'home') {
-        hideAllSections();
         document.getElementById('welcome-box').classList.remove('hidden');
         document.getElementById('stats-card').classList.remove('hidden');
         document.getElementById('searchInput').value = '';
