@@ -1,9 +1,7 @@
-/* Gelecekte eklemek isteyeceğiniz özel animasyonlar veya CSS kuralları için */
 .suggestion:last-child {
     border-bottom: none;
 }
 
-/* Scrollbar özelleştirme */
 #suggestions::-webkit-scrollbar {
     width: 6px;
 }
