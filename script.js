@@ -52,6 +52,8 @@ function initButtons() {
         }
 
         if (!document.getElementById('alphabet-section').classList.contains('hidden')) renderAlphabet();
+        // DÜZELTME: Alfabe değiştiğinde mevcut harf listesini de çevirerek güncelle
+        if (currentSelectedLetter) showLetterResults(currentSelectedLetter, 0);
         if (!document.getElementById('stats-section')?.classList.contains('hidden')) renderAlphabetStats();
         if (!document.getElementById('ety-section')?.classList.contains('hidden')) renderEtymologyStats();
     });
@@ -268,6 +270,7 @@ function showLetterResults(harf, page, showAll = false) {
     const start = page * PAGE_SIZE; const end = showAll ? filtered.length : start + PAGE_SIZE;
     filtered.slice(start, end).forEach(item => {
         const b = document.createElement('button'); b.className = "text-left p-3 rounded bg-white/5 border border-subtle-light dark:border-subtle-dark hover:border-primary transition-all truncate font-semibold text-sm select-none text-foreground-light dark:text-foreground-dark";
+        // DÜZELTME: Kelime listesindeki metinlerin çevrilmesi eklendi
         b.innerText = isGreek ? convertToGreek(item.Sözcük) : item.Sözcük;
         b.onclick = () => selectWord(item, item.Sözcük, false, null, false); 
         resultsDiv.appendChild(b);
