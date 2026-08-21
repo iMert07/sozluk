@@ -1,14 +1,23 @@
 .suggestion:last-child {
     border-bottom: none;
 }
-
-#suggestions::-webkit-scrollbar {
+#suggestions::-webkit-scrollbar, .max-h-\[20rem\]::-webkit-scrollbar {
     width: 6px;
 }
-#suggestions::-webkit-scrollbar-track {
+#suggestions::-webkit-scrollbar-track, .max-h-\[20rem\]::-webkit-scrollbar-track {
     background: transparent;
 }
-#suggestions::-webkit-scrollbar-thumb {
+#suggestions::-webkit-scrollbar-thumb, .max-h-\[20rem\]::-webkit-scrollbar-thumb {
     background: #1193d4;
     border-radius: 10px;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+    animation: fadeIn 0.25s ease-out forwards;
+}
+.dark .group:hover, .dark .group:focus {
+    border-color: #1193d4 !important;
 }
