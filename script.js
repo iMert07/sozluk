@@ -4,6 +4,7 @@ let isGreek = false;
 let currentSelectedLetter = null;
 let sortConfig = { key: 'harf', direction: 'asc' }; 
 let etySortConfig = { key: 'label', direction: 'asc' }; 
+let activeOriginFilter = null;
 let searchHistory = JSON.parse(localStorage.getItem('orum_history')) || [];
 
 const PAGE_SIZE = 36;
@@ -23,6 +24,17 @@ const translations = {
         'example_title': 'Örnek', 'etymology_title': 'Köken', 'no_result': 'Sonuç bulunamadı' 
     } 
 };
+
+function showNotification(message, title = "Bilgilendirme") {
+    const modal = document.getElementById('notificationModal');
+    document.getElementById('notificationTitle').innerText = title;
+    document.getElementById('notificationMessage').innerText = message;
+    modal.classList.remove('hidden');
+}
+
+function closeNotification() {
+    document.getElementById('notificationModal').classList.add('hidden');
+}
 
 function initButtons() {
     ['theme-toggle', 'alphabet-toggle'].forEach(id => {
@@ -51,9 +63,14 @@ function initButtons() {
             showResult(lastSelectedWord);
         }
 
-        if (!document.getElementById('alphabet-section').classList.contains('hidden')) renderAlphabet();
-        // DÜZELTME: Alfabe değiştiğinde mevcut harf listesini de çevirerek güncelle
-        if (currentSelectedLetter) showLetterResults(currentSelectedLetter, 0);
+        if (!document.getElementById('alphabet-section').classList.contains('hidden')) {
+            if (activeOriginFilter) {
+                showEtymologyWordList(activeOriginFilter, 0);
+            } else if (currentSelectedLetter) {
+                renderAlphabet();
+                showLetterResults(currentSelectedLetter, 0);
+            }
+        }
         if (!document.getElementById('stats-section')?.classList.contains('hidden')) renderAlphabetStats();
         if (!document.getElementById('ety-section')?.classList.contains('hidden')) renderEtymologyStats();
     });
@@ -162,6 +179,7 @@ function selectWord(wordData, pText, forceNoHistory = false, subText = null, fro
 }
 
 function hideAllSections() {
+    activeOriginFilter = null;
     ['welcome-box', 'stats-card', 'alphabet-section', 'stats-section', 'ety-section'].forEach(id => {
         document.getElementById(id)?.classList.add('hidden');
     });
@@ -178,12 +196,12 @@ function showPage(pageId) {
     }
 }
 
-function showKelimelerPage() { 
+function showKelimelerPage(letter = "A") { 
     hideAllSections(); 
     document.getElementById('alphabet-section').classList.remove('hidden'); 
-    currentSelectedLetter = "A"; 
+    currentSelectedLetter = letter; 
     renderAlphabet(); 
-    showLetterResults("A", 0); 
+    showLetterResults(letter, 0); 
 }
 
 function showStatsPage() { hideAllSections(); document.getElementById('stats-section').classList.remove('hidden'); renderAlphabetStats(); }
@@ -192,12 +210,13 @@ function showEtyPage() { hideAllSections(); document.getElementById('ety-section
 function showResult(word) {
     const resultDiv = document.getElementById('result');
     const convert = (val) => isGreek ? convertToGreek(val) : val;
-    resultDiv.innerHTML = `<div class="bg-subtle-light dark:bg-subtle-dark rounded-lg sm:rounded-xl overflow-hidden p-4 sm:p-6 shadow-md border border-subtle-light dark:border-subtle-dark mt-8"><div class="mb-5"><h2 class="text-4xl font-bold text-primary">${convert(word.Sözcük)}</h2>${word.Bilimsel ? `<p class="text-base text-muted-light dark:text-muted-dark opacity-70 mt-1">${convert(word.Bilimsel)}</p>` : ''}${word.Tür ? `<p class="text-sm opacity-60 mt-0.5">${convert(word.Tür)}</p>` : ''}</div><hr class="border-t border-subtle-light dark:border-subtle-dark my-5"><div class="space-y-6">${word.Açıklama ? `<div><h3 class="text-primary font-bold text-lg mb-1">Açıklama</h3><p class="text-base leading-relaxed">${convert(word.Açıklama)}</p></div>` : ''}${word.Köken ? `<div><h3 class="text-primary font-bold text-lg mb-1">Köken</h3><p class="text-base leading-relaxed">${convert(word.Köken)}</p></div>` : ''}${word.Örnek ? `<div><h3 class="text-primary font-bold text-lg mb-1">Örnek</h3><p class="text-base border-l-4 border-primary/40 pl-4 py-1">${convert(word.Örnek)}</p></div>` : ''}${word['Eş Anlamlılar'] ? `<div><h3 class="text-primary font-bold text-lg mb-1">Eş Anlamlılar</h3><p class="text-base">${convert(word['Eş Anlamlılar'])}</p></div>` : ''}</div></div>`;
+    resultDiv.innerHTML = `<div class="bg-subtle-light dark:bg-subtle-dark rounded-lg sm:rounded-xl overflow-hidden p-4 sm:p-6 shadow-md border border-subtle-light dark:border-subtle-dark mt-8 animate-fade-in"><div class="mb-5"><h2 class="text-4xl font-bold text-primary">${convert(word.Sözcük)}</h2>${word.Bilimsel ? `<p class="text-base text-muted-light dark:text-muted-dark opacity-70 mt-1">${convert(word.Bilimsel)}</p>` : ''}${word.Tür ? `<p class="text-sm opacity-60 mt-0.5">${convert(word.Tür)}</p>` : ''}</div><hr class="border-t border-subtle-light dark:border-subtle-dark my-5"><div class="space-y-6">${word.Açıklama ? `<div><h3 class="text-primary font-bold text-lg mb-1">Açıklama</h3><p class="text-base leading-relaxed">${convert(word.Açıklama)}</p></div>` : ''}${word.Köken ? `<div><h3 class="text-primary font-bold text-lg mb-1">Köken</h3><p class="text-base leading-relaxed">${convert(word.Köken)}</p></div>` : ''}${word.Örnek ? `<div><h3 class="text-primary font-bold text-lg mb-1">Örnek</h3><p class="text-base border-l-4 border-primary/40 pl-4 py-1">${convert(word.Örnek)}</p></div>` : ''}${word['Eş Anlamlılar'] ? `<div><h3 class="text-primary font-bold text-lg mb-1">Eş Anlamlılar</h3><p class="text-base">${convert(word['Eş Anlamlılar'])}</p></div>` : ''}</div></div>`;
 }
 
 function renderEtymologyStats() {
     const container = document.getElementById('ety-container'); if (!container) return;
     let etyMap = {}; let totalValidEntries = 0;
+    
     allWords.forEach(w => {
         if (!w.Sözcük || w.Sözcük.trim() === "") return;
         totalValidEntries++;
@@ -211,18 +230,80 @@ function renderEtymologyStats() {
         }
         etyMap[origin] = (etyMap[origin] || 0) + 1;
     });
+
     let etyData = Object.keys(etyMap).map(key => ({ label: key, count: etyMap[key], percent: (etyMap[key] / totalValidEntries * 100).toFixed(1) }));
     etyData.sort((a, b) => etySortConfig.key === 'label' ? (etySortConfig.direction === 'asc' ? a.label.localeCompare(b.label, 'tr') : b.label.localeCompare(a.label, 'tr')) : (etySortConfig.direction === 'asc' ? b.count - a.count : a.count - b.count));
+    
     const t_dil = isGreek ? convertToGreek('Dil') : 'Dil';
     const t_adet = isGreek ? convertToGreek('Adet') : 'Adet';
     const t_oran = isGreek ? convertToGreek('Oran') : 'Oran';
+    
     container.innerHTML = `<div class="col-span-full mb-8 flex justify-center items-center select-none"><div class="inline-flex items-center bg-subtle-light dark:bg-subtle-dark p-1.5 rounded-2xl border border-subtle-light dark:border-subtle-dark shadow-sm gap-2"><button onclick="setEtySort('label')" class="px-4 py-2 rounded-xl font-bold text-[11px] uppercase tracking-widest transition-all ${etySortConfig.key === 'label' ? 'bg-primary text-white shadow-md' : 'opacity-50 hover:opacity-100'}">${t_dil}</button><button onclick="setEtySort('count')" class="px-4 py-2 rounded-xl font-bold text-[11px] uppercase tracking-widest transition-all ${etySortConfig.key === 'count' ? 'bg-primary text-white shadow-md' : 'opacity-50 hover:opacity-100'}">${t_adet}</button><div class="h-8 w-[1px] bg-foreground-light/10 dark:bg-foreground-dark/10 mx-1"></div><button onclick="toggleEtyDirection()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-primary text-white shadow-md"><span class="text-xl font-bold">${etySortConfig.direction === 'asc' ? '↓' : '↑'}</span></button></div></div>`;
+    
     etyData.forEach(item => {
-        const box = document.createElement('div'); box.className = "bg-subtle-light dark:bg-subtle-dark rounded-xl border border-subtle-light dark:border-subtle-dark overflow-hidden shadow-sm select-none hover:border-primary/50 transition-colors flex flex-col h-full";
-        box.innerHTML = `<div class="bg-primary text-white text-center py-2 px-1 font-bold text-[13px] sm:text-sm leading-tight flex items-center justify-center min-h-[44px]">${isGreek ? convertToGreek(item.label) : item.label}</div><div class="flex divide-x divide-subtle-light dark:divide-subtle-dark text-center mt-auto"><div class="flex-1 py-2 leading-tight"><p class="text-[9px] opacity-50 uppercase font-bold mb-0.5">${t_adet}</p><p class="text-base font-bold text-primary">${item.count}</p></div><div class="flex-1 py-2 leading-tight"><p class="text-[9px] opacity-50 uppercase font-bold mb-0.5">${t_oran}</p><p class="text-base font-bold">%${item.percent}</p></div></div>`;
+        const box = document.createElement('div'); 
+        box.className = "bg-subtle-light dark:bg-subtle-dark rounded-xl border border-subtle-light dark:border-subtle-dark overflow-hidden shadow-sm select-none hover:border-primary transition-all flex flex-col h-full cursor-pointer group";
+        box.onclick = () => showEtymologyWordList(item.label, 0);
+        box.innerHTML = `<div class="bg-primary/90 group-hover:bg-primary text-white text-center py-3 px-2 font-bold text-[13px] sm:text-sm leading-tight flex items-center justify-center min-h-[48px] transition-colors">${isGreek ? convertToGreek(item.label) : item.label}</div><div class="flex divide-x divide-subtle-light dark:divide-subtle-dark text-center mt-auto"><div class="flex-1 py-2 leading-tight"><p class="text-[9px] opacity-50 uppercase font-bold mb-0.5">${t_adet}</p><p class="text-base font-bold text-primary">${item.count}</p></div><div class="flex-1 py-2 leading-tight"><p class="text-[9px] opacity-50 uppercase font-bold mb-0.5">${t_oran}</p><p class="text-base font-bold">%${item.percent}</p></div></div>`;
         container.appendChild(box);
     });
 }
+
+function showEtymologyWordList(originName, page = 0) {
+    hideAllSections();
+    activeOriginFilter = originName;
+    const section = document.getElementById('alphabet-section');
+    section.classList.remove('hidden');
+    
+    currentSelectedLetter = null;
+    const list = document.getElementById('alphabet-list');
+    if (list) list.innerHTML = `<div class="col-span-full py-2 px-4 text-center font-bold text-primary text-lg flex flex-wrap items-center justify-center gap-4"><span>Köken: ${isGreek ? convertToGreek(originName) : originName}</span><button onclick="showEtyPage()" class="text-xs bg-muted-light/20 px-3 py-1 rounded-lg hover:bg-primary hover:text-white transition-colors">Geri Dön</button></div>`;
+    
+    const resultsDiv = document.getElementById('letter-results'); 
+    const pagDiv = document.getElementById('alphabet-pagination');
+    resultsDiv.innerHTML = ""; 
+    pagDiv.innerHTML = "";
+
+    const filtered = allWords.filter(w => {
+        if (!w.Sözcük || w.Sözcük.trim() === "") return false;
+        let origin = "Türkçe"; let etyText = w.Köken ? w.Köken.trim() : "";
+        if (etyText !== "") {
+            if (etyText.toLowerCase().includes("kökenli")) {
+                let parts = etyText.split(/kökenli/i);
+                origin = parts[parts.length - 1].trim() || parts[parts.length - 2].trim().split(" ").pop();
+            } else { origin = etyText; }
+            if (origin.toLowerCase() === "türkçe") origin = "Türkçe (Melez)";
+        }
+        return origin === originName;
+    }).sort((a,b) => a.Sözcük.localeCompare(b.Sözcük, 'tr'));
+
+    const start = page * PAGE_SIZE; 
+    const end = start + PAGE_SIZE;
+    filtered.slice(start, end).forEach(item => {
+        const b = document.createElement('button'); 
+        b.className = "text-left p-3 rounded bg-white/5 border border-subtle-light dark:border-subtle-dark hover:border-primary transition-all truncate font-semibold text-sm select-none text-foreground-light dark:text-foreground-dark shadow-sm";
+        b.innerText = isGreek ? convertToGreek(item.Sözcük) : item.Sözcük;
+        b.onclick = () => selectWord(item, item.Sözcük, false, null, false); 
+        resultsDiv.appendChild(b);
+    });
+
+    if (filtered.length > PAGE_SIZE) {
+        pagDiv.classList.remove('hidden');
+        for (let i = 0; i < Math.ceil(filtered.length / PAGE_SIZE); i++) {
+            const pBtn = document.createElement('button'); 
+            pBtn.className = `w-10 h-10 flex items-center justify-center rounded font-bold transition-all select-none ${i === page ? 'bg-primary text-white' : 'bg-subtle-light/50 dark:bg-subtle-dark hover:bg-primary/20'}`;
+            pBtn.innerText = i + 1; 
+            pBtn.onclick = () => { 
+                showEtymologyWordList(originName, i); 
+                document.getElementById('alphabet-menu').scrollIntoView({ behavior: 'smooth' }); 
+            };
+            pagDiv.appendChild(pBtn);
+        }
+    }
+    
+    section.scrollIntoView({ behavior: 'smooth' });
+}
+
 function setEtySort(key) { etySortConfig.key = key; renderEtymologyStats(); }
 function toggleEtyDirection() { etySortConfig.direction = etySortConfig.direction === 'asc' ? 'desc' : 'asc'; renderEtymologyStats(); }
 
@@ -230,19 +311,50 @@ function renderAlphabetStats() {
     const container = document.getElementById('stats-container'); if (!container) return;
     let totalChars = 0; let totalEntries = 0;
     allWords.forEach(w => { if (w.Sözcük) { totalEntries++; totalChars += w.Sözcük.replace(/\s/g, '').length; } });
+    
     let statsData = customAlphabet.filter(h => h !== " ").map(harf => {
         const startsWithCount = allWords.filter(w => w.Sözcük && normalizeString(w.Sözcük).startsWith(normalizeString(harf))).length;
-        let totalOccurrence = 0; allWords.forEach(w => { if (w.Sözcük) totalOccurrence += (normalizeString(w.Sözcük).split(normalizeString(harf)).length - 1); });
+        let totalOccurrence = 0; 
+        allWords.forEach(w => { if (w.Sözcük) totalOccurrence += (normalizeString(w.Sözcük).split(normalizeString(harf)).length - 1); });
         return { harf, başta: startsWithCount, baştaPct: (startsWithCount / totalEntries * 100).toFixed(1), toplam: totalOccurrence, toplamPct: (totalOccurrence / totalChars * 100).toFixed(1) };
     });
-    statsData.sort((a, b) => sortConfig.key === 'harf' ? (sortConfig.direction === 'asc' ? a.harf.localeCompare(b.harf, 'tr') : b.harf.localeCompare(a.harf, 'tr')) : (sortConfig.direction === 'asc' ? b[sortConfig.key] - a[sortConfig.key] : a[sortConfig.key] - b[sortConfig.key]));
+
+    statsData.sort((a, b) => {
+        let dirMultiplier = sortConfig.direction === 'asc' ? 1 : -1;
+
+        if (sortConfig.key === 'harf') {
+            return a.harf.localeCompare(b.harf, 'tr') * dirMultiplier;
+        } else if (sortConfig.key === 'toplam') {
+            if (b.toplam !== a.toplam) {
+                return (b.toplam - a.toplam) * dirMultiplier;
+            }
+            if (b.başta !== a.başta) {
+                return (b.başta - a.başta) * dirMultiplier;
+            }
+            return a.harf.localeCompare(b.harf, 'tr');
+        } else if (sortConfig.key === 'başta') {
+            if (b.başta !== a.başta) {
+                return (b.başta - a.başta) * dirMultiplier;
+            }
+            if (b.toplam !== a.toplam) {
+                return (b.toplam - a.toplam) * dirMultiplier;
+            }
+            return a.harf.localeCompare(b.harf, 'tr');
+        }
+        return 0;
+    });
+
     const t_harf = isGreek ? convertToGreek('Harf') : 'Harf';
     const t_basta = isGreek ? convertToGreek('Başta') : 'Başta';
     const t_toplam = isGreek ? convertToGreek('Toplam') : 'Toplam';
+    
     container.innerHTML = `<div class="col-span-full mb-8 flex justify-center items-center select-none"><div class="inline-flex items-center bg-subtle-light dark:bg-subtle-dark p-1.5 rounded-2xl border border-subtle-light dark:border-subtle-dark shadow-sm gap-2"><div class="flex gap-1"><button onclick="setSortKey('harf')" class="px-4 py-2 rounded-xl font-bold text-[11px] uppercase tracking-widest transition-all ${sortConfig.key === 'harf' ? 'bg-primary text-white shadow-md' : 'opacity-50 hover:opacity-100'}">${t_harf}</button><button onclick="setSortKey('başta')" class="px-4 py-2 rounded-xl font-bold text-[11px] uppercase tracking-widest transition-all ${sortConfig.key === 'başta' ? 'bg-primary text-white shadow-md' : 'opacity-50 hover:opacity-100'}">${t_basta}</button><button onclick="setSortKey('toplam')" class="px-4 py-2 rounded-xl font-bold text-[11px] uppercase tracking-widest transition-all ${sortConfig.key === 'toplam' ? 'bg-primary text-white shadow-md' : 'opacity-50 hover:opacity-100'}">${t_toplam}</button></div><div class="h-8 w-[1px] bg-foreground-light/10 dark:bg-foreground-dark/10 mx-1"></div><button onclick="toggleSortDirection()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-primary text-white shadow-md"><span class="text-xl font-bold">${sortConfig.direction === 'asc' ? '↓' : '↑'}</span></button></div></div>`;
+    
     statsData.forEach(item => {
-        const box = document.createElement('div'); box.className = "bg-subtle-light dark:bg-subtle-dark rounded-xl border border-subtle-light dark:border-subtle-dark overflow-hidden shadow-sm select-none";
-        box.innerHTML = `<div class="bg-primary text-white text-center py-2 font-bold text-xl">${isGreek ? convertToGreek(item.harf) : item.harf}</div><div class="flex divide-x divide-subtle-light dark:divide-subtle-dark text-center"><div class="flex-1 py-3 leading-tight"><p class="text-[10px] opacity-50 uppercase font-bold mb-1">${t_basta}</p><p class="text-lg font-bold text-primary">${item.başta}</p><p class="text-[11px] opacity-70 mt-0.5">%${item.baştaPct}</p></div><div class="flex-1 py-3 leading-tight"><p class="text-[10px] opacity-50 uppercase font-bold mb-1">${t_toplam}</p><p class="text-lg font-bold">${item.toplam}</p><p class="text-[11px] opacity-70 mt-0.5">%${item.toplamPct}</p></div></div>`;
+        const box = document.createElement('div'); 
+        box.className = "bg-subtle-light dark:bg-subtle-dark rounded-xl border border-subtle-light dark:border-subtle-dark overflow-hidden shadow-sm select-none hover:border-primary transition-all cursor-pointer group";
+        box.onclick = () => showKelimelerPage(item.harf);
+        box.innerHTML = `<div class="bg-primary group-hover:opacity-90 text-white text-center py-2 font-bold text-xl transition-opacity">${isGreek ? convertToGreek(item.harf) : item.harf}</div><div class="flex divide-x divide-subtle-light dark:divide-subtle-dark text-center"><div class="flex-1 py-3 leading-tight"><p class="text-[10px] opacity-50 uppercase font-bold mb-1">${t_basta}</p><p class="text-lg font-bold text-primary">${item.başta}</p><p class="text-[11px] opacity-70 mt-0.5">%${item.baştaPct}</p></div><div class="flex-1 py-3 leading-tight"><p class="text-[10px] opacity-50 uppercase font-bold mb-1">${t_toplam}</p><p class="text-lg font-bold">${item.toplam}</p><p class="text-[11px] opacity-70 mt-0.5">%${item.toplamPct}</p></div></div>`;
         container.appendChild(box);
     });
 }
@@ -269,8 +381,7 @@ function showLetterResults(harf, page, showAll = false) {
     const filtered = allWords.filter(w => w.Sözcük && normalizeString(w.Sözcük).startsWith(normalizeString(harf))).sort((a,b) => a.Sözcük.localeCompare(b.Sözcük, 'tr'));
     const start = page * PAGE_SIZE; const end = showAll ? filtered.length : start + PAGE_SIZE;
     filtered.slice(start, end).forEach(item => {
-        const b = document.createElement('button'); b.className = "text-left p-3 rounded bg-white/5 border border-subtle-light dark:border-subtle-dark hover:border-primary transition-all truncate font-semibold text-sm select-none text-foreground-light dark:text-foreground-dark";
-        // DÜZELTME: Kelime listesindeki metinlerin çevrilmesi eklendi
+        const b = document.createElement('button'); b.className = "text-left p-3 rounded bg-white/5 border border-subtle-light dark:border-subtle-dark hover:border-primary transition-all truncate font-semibold text-sm select-none text-foreground-light dark:text-foreground-dark shadow-sm";
         b.innerText = isGreek ? convertToGreek(item.Sözcük) : item.Sözcük;
         b.onclick = () => selectWord(item, item.Sözcük, false, null, false); 
         resultsDiv.appendChild(b);
@@ -307,7 +418,10 @@ function submitFeedback() {
     const contact = document.getElementById('feedback-contact').value.trim();
     const scriptURL = 'https://script.google.com/macros/s/AKfycbww1GhijmHLc81d6-K7lp6muodrlxk_PKm71S1inisYwZ_sAPgBj5l5iondTPTShZnV/exec';
 
-    if (!message) { alert("Lütfen bir mesaj yazın."); return; }
+    if (!message) { 
+        showNotification("Lütfen bir mesaj yazın.", "Uyarı"); 
+        return; 
+    }
 
     const btn = document.getElementById('feedback-submit-btn');
     btn.disabled = true; btn.innerText = "Gönderiliyor...";
@@ -323,11 +437,11 @@ function submitFeedback() {
         body: params.toString() 
     })
     .then(() => { 
-        alert("Geri bildiriminiz başarıyla iletildi. Teşekkür ederiz!"); 
+        showNotification("Geri bildiriminiz başarıyla iletildi. Teşekkür ederiz!", "Başarılı"); 
         toggleFeedbackForm(); 
     })
     .catch(() => { 
-        alert("Bir sorun oluştu."); 
+        showNotification("Bir sorun oluştu, lütfen daha sonra tekrar deneyiniz.", "Hata"); 
     })
     .finally(() => { 
         btn.disabled = false; 
