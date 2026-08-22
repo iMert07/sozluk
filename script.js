@@ -23,7 +23,7 @@ const translations = {
         'feedback_cancel': 'İptal', 'feedback_send': 'Gönder', 
         'synonyms_title': 'Eş Anlamlılar', 'description_title': 'Açıklama', 
         'example_title': 'Örnek', 'etymology_title': 'Köken', 'no_result': 'Sonuç bulunamadı',
-        'random_title': 'Rastgele Keşfet',
+        'random_title': 'Keşfet',
         'update_date_text': 'Son Güncelleme: 22.08.2026',
         'feedback_contact_label': 'Size Nasıl Ulaşabilirim?',
         'feedback_contact_placeholder': 'İsteğe bağlı'
