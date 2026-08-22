@@ -130,8 +130,19 @@
                     <p class="text-sm text-muted-light dark:text-muted-dark" data-key="about_text_2">Herhangi bir geri bildiriminiz, öneriniz veya yeni sözcük ekleme isteğiniz varsa; lütfen yukarıdaki menüden "Geri Bildirim" butonunu kullanarak bana ulaşın. Katkılarınızla bu sözlüğü daha da zenginleştirebiliriz!</p>
                 </div>
 
+                <!-- Rastgele Keşfet Kartı (Sabit Ana Sayfa Bileşeni) -->
+                <div id="random-word-card" class="mb-6 p-6 bg-subtle-light dark:bg-subtle-dark rounded-lg sm:rounded-xl border border-subtle-light dark:border-subtle-dark shadow-sm cursor-pointer hover:border-primary transition-all group">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-primary" data-key="random_title">Rastgele Keşfet</span>
+                        <svg class="w-4 h-4 text-muted-light dark:text-muted-dark group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </div>
+                    <h3 id="random-word-title" class="text-2xl font-bold text-foreground-light dark:text-foreground-dark mb-1"></h3>
+                    <p id="random-word-desc" class="text-base text-muted-light dark:text-muted-dark line-clamp-2"></p>
+                </div>
+
                 <div id="stats-card" class="mb-8 p-4 bg-subtle-light/50 dark:bg-subtle-dark/50 rounded-lg sm:rounded-xl border border-subtle-light dark:border-subtle-dark text-center shadow-sm">
-                    <p id="stats-sentence" class="text-sm sm:text-base font-medium opacity-90"></p>
+                    <p id="stats-sentence" class="text-sm sm:text-base font-medium opacity-90 mb-2"></p>
+                    <p id="update-date-text" class="text-xs text-muted-light dark:text-muted-dark opacity-70" data-key="update_date_text">Son Güncelleme: 22.08.2026</p>
                 </div>
 
                 <div id="result" class="mb-8 md:mb-12"></div>
@@ -147,11 +158,11 @@
             <h2 class="text-2xl font-bold mb-6 text-primary" data-key="feedback_title">Geri Bildirim</h2>
             <div class="space-y-4">
                 <div>
-                    <textarea id="feedback-message" rows="4" class="w-full p-3 bg-background-light dark:bg-background-dark border-0 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none placeholder:text-muted-light dark:placeholder:text-muted-dark" placeholder="Mesajınız..."></textarea>
+                    <textarea id="feedback-message" rows="4" class="w-full p-3 bg-background-light dark:bg-background-dark border-0 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none placeholder:text-muted-light dark:placeholder:text-muted-dark" placeholder="Mesajınız..." data-key="feedback_placeholder"></textarea>
                 </div>
                 <div>
-                    <label class="block text-sm font-bold mb-1 text-foreground-light dark:text-foreground-dark">Size Nasıl Ulaşabilirim?</label>
-                    <input type="text" id="feedback-contact" class="w-full p-3 bg-background-light dark:bg-background-dark border-0 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none placeholder:text-muted-light dark:placeholder:text-muted-dark" placeholder="İsteğe bağlı">
+                    <label class="block text-sm font-bold mb-1 text-foreground-light dark:text-foreground-dark" data-key="feedback_contact_label">Size Nasıl Ulaşabilirim?</label>
+                    <input type="text" id="feedback-contact" class="w-full p-3 bg-background-light dark:bg-background-dark border-0 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none placeholder:text-muted-light dark:placeholder:text-muted-dark" placeholder="İsteğe bağlı" data-key="feedback_contact_placeholder">
                 </div>
             </div>
             <div class="flex gap-3 mt-6">
