@@ -213,8 +213,17 @@ function showKelimelerPage(letter = "A") {
     showLetterResults(letter, 0); 
 }
 
-function showStatsPage() { hideAllSections(); document.getElementById('stats-section').classList.remove('hidden'); renderAlphabetStats(); }
-function showEtyPage() { hideAllSections(); document.getElementById('ety-section').classList.remove('hidden'); renderEtymologyStats(); }
+function showStatsPage() { 
+    hideAllSections(); 
+    document.getElementById('stats-section').classList.remove('hidden'); 
+    renderAlphabetStats(); 
+}
+
+function showEtyPage() { 
+    hideAllSections(); 
+    document.getElementById('ety-section').classList.remove('hidden'); 
+    renderEtymologyStats(); 
+}
 
 function showResult(word) {
     const resultDiv = document.getElementById('result');
@@ -259,9 +268,8 @@ function renderEtymologyStats() {
 }
 
 function showEtymologyWordList(originName, page = 0) {
-    hideAllSections();
-    activeOriginFilter = originName;
     const section = document.getElementById('alphabet-section');
+    document.getElementById('ety-section').classList.add('hidden'); // Köken kutularını gizle
     section.classList.remove('hidden');
     
     currentSelectedLetter = null;
@@ -494,8 +502,9 @@ function calculateStats() {
     s.innerHTML = sent.replace(eCount, `<span class="text-primary font-bold">${eCount}</span>`).replace(tWord, `<span class="text-primary font-bold">${tWord}</span>`);
     
     if (dateEl) {
-        const updateText = "Son Güncelleme: 22.08.2026";
-        dateEl.textContent = isGreek ? convertToGreek(updateText) : updateText;
+        const rawDate = "Son Güncelleme: 22.08.2026";
+        const displayDate = isGreek ? convertToGreek(rawDate) : rawDate;
+        dateEl.innerHTML = displayDate.replace("22.08.2026", `<span class="text-primary font-bold">22.08.2026</span>`);
     }
 }
 
@@ -512,6 +521,7 @@ function updateText(lang) {
             else el.textContent = f; 
         } 
     }); 
+    calculateStats(); 
 }
 
 function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
