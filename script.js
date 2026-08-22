@@ -11,7 +11,6 @@ let searchHistory = JSON.parse(localStorage.getItem('orum_history')) || [];
 const PAGE_SIZE = 36;
 const customAlphabet = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVXYZ".split("");
 const latinToGreekMap = { "a":"Α","A":"Α", "b":"Β","B":"Β", "c":"J","C":"J", "ç":"C","Ç":"C", "d":"D","D":"D", "e":"Ε","E":"Ε", "f":"F","F":"F", "g":"G","G":"G", "ğ":"Γ","Ğ":"Γ", "h":"Η","H":"Η", "ı":"Ь","I":"Ь", "i":"Ͱ","İ":"Ͱ", "j":"Σ","J":"Σ", "k":"Κ","Κ":"Κ", "l":"L","L":"L", "m":"Μ","M":"Μ", "n":"Ν","N":"Ν", "o":"Q","O":"Q", "ö":"Ω","Ö":"Ω", "p":"Π","P":"Π", "r":"Ρ","R":"Ρ", "s":"S","S":"S", "ş":"Ш","Ş":"Ш", "t":"Τ","T":"Τ", "u":"U","U":"U", "ü":"Υ","Ü":"Υ", "v":"V","V":"V", "x":"Ψ","X":"Ψ", "y":"R","Y":"R", "z":"Ζ","Z":"Ζ" };
-
 const translations = { 
     'tr': { 
         'title': 'Orum Dili', 'nav_words': 'Kelimeler', 'nav_stats': 'Harf Dağılımı', 'nav_ety': 'Köken Dağılımı',
@@ -268,13 +267,18 @@ function renderEtymologyStats() {
 }
 
 function showEtymologyWordList(originName, page = 0) {
+    activeOriginFilter = originName;
     const section = document.getElementById('alphabet-section');
-    document.getElementById('ety-section').classList.add('hidden'); // Köken kutularını gizle
+    document.getElementById('ety-section').classList.add('hidden'); 
     section.classList.remove('hidden');
     
     currentSelectedLetter = null;
     const list = document.getElementById('alphabet-list');
-    if (list) list.innerHTML = `<div class="col-span-full py-2 px-4 text-center font-bold text-primary text-lg flex flex-wrap items-center justify-center gap-4"><span>Köken: ${isGreek ? convertToGreek(originName) : originName}</span><button onclick="showEtyPage()" class="text-xs bg-muted-light/20 px-3 py-1 rounded-lg hover:bg-primary hover:text-white transition-colors">Geri Dön</button></div>`;
+    if (list) {
+        const labelText = isGreek ? convertToGreek("Köken: " + originName) : ("Köken: " + originName);
+        const backText = isGreek ? convertToGreek("Geri Dön") : "Geri Dön";
+        list.innerHTML = `<div class="col-span-full py-2 px-4 text-center font-bold text-primary text-lg flex flex-wrap items-center justify-center gap-4"><span>${labelText}</span><button onclick="showEtyPage()" class="text-xs bg-muted-light/20 px-3 py-1 rounded-lg hover:bg-primary hover:text-white transition-colors">${backText}</button></div>`;
+    }
     
     const resultsDiv = document.getElementById('letter-results'); 
     const pagDiv = document.getElementById('alphabet-pagination');
@@ -369,7 +373,7 @@ function renderAlphabetStats() {
     
     statsData.forEach(item => {
         const box = document.createElement('div'); 
-        box.className = "bg-subtle-light dark:bg-subtle-dark rounded-xl border border-subtle-light dark:border-subtle-dark overflow-hidden shadow-sm select-none hover:border-primary transition-all cursor-pointer group";
+        box.className = "bg-subtle-light dark:bg-subtle-dark rounded-xl border border-subtle-light dark:border-subtle-dark overflow-hidden shadow-sm select-none hover:border-primary transition-all flex flex-col h-full cursor-pointer group";
         box.onclick = () => showKelimelerPage(item.harf);
         box.innerHTML = `<div class="bg-primary group-hover:opacity-90 text-white text-center py-2 font-bold text-xl transition-opacity">${isGreek ? convertToGreek(item.harf) : item.harf}</div><div class="flex divide-x divide-subtle-light dark:divide-subtle-dark text-center"><div class="flex-1 py-3 leading-tight"><p class="text-[10px] opacity-50 uppercase font-bold mb-1">${t_basta}</p><p class="text-lg font-bold text-primary">${item.başta}</p><p class="text-[11px] opacity-70 mt-0.5">%${item.baştaPct}</p></div><div class="flex-1 py-3 leading-tight"><p class="text-[10px] opacity-50 uppercase font-bold mb-1">${t_toplam}</p><p class="text-lg font-bold">${item.toplam}</p><p class="text-[11px] opacity-70 mt-0.5">%${item.toplamPct}</p></div></div>`;
         container.appendChild(box);
