@@ -3,15 +3,22 @@ let lastSelectedWord = null;
 let currentRandomWord = null;
 let isGreek = false;
 let currentSelectedLetter = null;
+let currentLetterPage = 0;
 let sortConfig = { key: 'harf', direction: 'asc' }; 
 let etySortConfig = { key: 'label', direction: 'asc' }; 
+
 let activeOriginFilter = null;
-let activeTypeConfig = null; // { type: "Canlı", title: "Canlılar" } vb.
+let currentOriginPage = 0;
+
+let activeTypeFilter = null; // "Canlı", "Renk", "Fiil"
+let activeTypeTitle = null;  // "Canlılar", "Renkler", "Fiiller"
+let currentTypePage = 0;
+
 let searchHistory = JSON.parse(localStorage.getItem('orum_history')) || [];
 
 const PAGE_SIZE = 36;
 const customAlphabet = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVXYZ".split("");
-const latinToGreekMap = { "a":"Α","A":"Α", "b":"Β","B":"Β", "c":"J","C":"J", "ç":"C","Ç":"C", "d":"D","D":"D", "e":"Ε","E":"Ε", "f":"F","F":"F", "g":"G","G":"G", "ğ":"Γ","Ğ":"Γ", "h":"Η","H":"Η", "ı":"Ь","I":"Ь", "i":"Ͱ","İ":"Ͱ", "j":"Σ","J":"Σ", "k":"Κ","Κ":"Κ", "l":"L","L":"L", "m":"Μ","M":"Μ", "n":"Ν","N":"Ν", "o":"Q","O":"Q", "ö":"Ω","Ö":"Ω", "p":"Π","P":"Π", "r":"Ρ","R":"Ρ", "s":"S","S":"S", "ş":"Ш","Ş":"Ш", "t":"Τ","T":"Τ", "u":"U","U":"U", "ü":"Υ","Ü":"Y", "v":"V","V":"V", "x":"Ψ","X":"Ψ", "y":"R","Y":"R", "z":"Ζ","Z":"Z" };
+const latinToGreekMap = { "a":"Α","A":"Α", "b":"Β","B":"Β", "c":"J","C":"J", "ç":"C","Ç":"C", "d":"D","D":"D", "e":"Ε","E":"Ε", "f":"F","F":"F", "g":"G","G":"G", "ğ":"Γ","Ğ":"Γ", "h":"Η","H":"Η", "ı":"Ь","I":"Ь", "i":"Ͱ","İ":"Ͱ", "j":"Σ","J":"Σ", "k":"Κ","Κ":"Κ", "l":"L","L":"L", "m":"Μ","M":"Μ", "n":"Ν","N":"Ν", "o":"Q","O":"Q", "ö":"Ω","Ö":"Ω", "p":"Π","P":"Π", "r":"Ρ","R":"Ρ", "s":"S","S":"S", "ş":"Ш","Ş":"Ш", "t":"Τ","T":"Τ", "u":"U","U":"U", "ü":"Υ","Ü":"Υ", "v":"V","V":"V", "x":"Ψ","X":"Ψ", "y":"R","Y":"R", "z":"Ζ","Z":"Z" };
 const translations = { 
     'tr': { 
         'title': 'Orum Dili', 'nav_stats': 'Harf Dağılımı', 'nav_ety': 'Köken Dağılımı',
@@ -71,12 +78,12 @@ function initButtons() {
 
         if (!document.getElementById('alphabet-section').classList.contains('hidden')) {
             if (activeOriginFilter) {
-                showEtymologyWordList(activeOriginFilter, 0);
-            } else if (activeTypeConfig) {
-                showTypeWordList(activeTypeConfig.type, activeTypeConfig.title, 0);
+                showEtymologyWordList(activeOriginFilter, currentOriginPage);
+            } else if (activeTypeFilter) {
+                showTypeWordList(activeTypeFilter, activeTypeTitle, currentTypePage);
             } else if (currentSelectedLetter) {
                 renderAlphabet();
-                showLetterResults(currentSelectedLetter, 0);
+                showLetterResults(currentSelectedLetter, currentLetterPage);
             }
         }
         if (!document.getElementById('stats-section')?.classList.contains('hidden')) renderAlphabetStats();
@@ -184,12 +191,14 @@ function selectWord(wordData, pText, forceNoHistory = false, subText = null, fro
         document.getElementById('stats-card')?.classList.add('hidden');
     }
     showResult(wordData); 
-    setTimeout(() => { document.getElementById('result')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100); 
+    setTimeout(() => { document.getElementById('result')?.scrollIntoView({ behavior: 'smooth' }); }, 100); 
 }
 
 function hideAllSections() {
     activeOriginFilter = null;
-    activeTypeConfig = null;
+    activeTypeFilter = null;
+    activeTypeTitle = null;
+    currentSelectedLetter = null;
     ['welcome-box', 'random-word-card', 'stats-card', 'alphabet-section', 'stats-section', 'ety-section'].forEach(id => {
         document.getElementById(id)?.classList.add('hidden');
     });
@@ -212,6 +221,7 @@ function showKelimelerPage(letter = "A") {
     hideAllSections(); 
     document.getElementById('alphabet-section').classList.remove('hidden'); 
     currentSelectedLetter = letter; 
+    currentLetterPage = 0;
     renderAlphabet(); 
     showLetterResults(letter, 0); 
 }
@@ -241,12 +251,21 @@ function showFiillerPage() {
 }
 
 function showTypeWordList(targetType, titleName, page = 0) {
-    activeTypeConfig = { type: targetType, title: titleName };
-    hideAllSections();
+    activeTypeFilter = targetType;
+    activeTypeTitle = titleName;
+    currentTypePage = page;
+    activeOriginFilter = null;
+    currentSelectedLetter = null;
+
+    ['welcome-box', 'random-word-card', 'stats-card', 'stats-section', 'ety-section'].forEach(id => {
+        document.getElementById(id)?.classList.add('hidden');
+    });
+    const res = document.getElementById('result');
+    if(res) res.innerHTML = '';
+
     const section = document.getElementById('alphabet-section');
     section.classList.remove('hidden');
     
-    currentSelectedLetter = null;
     const list = document.getElementById('alphabet-list');
     if (list) {
         const labelText = isGreek ? convertToGreek(titleName) : titleName;
@@ -335,11 +354,20 @@ function renderEtymologyStats() {
 
 function showEtymologyWordList(originName, page = 0) {
     activeOriginFilter = originName;
+    currentOriginPage = page;
+    activeTypeFilter = null;
+    activeTypeTitle = null;
+    currentSelectedLetter = null;
+
+    ['welcome-box', 'random-word-card', 'stats-card', 'stats-section', 'ety-section'].forEach(id => {
+        document.getElementById(id)?.classList.add('hidden');
+    });
+    const res = document.getElementById('result');
+    if(res) res.innerHTML = '';
+
     const section = document.getElementById('alphabet-section');
-    document.getElementById('ety-section').classList.add('hidden'); 
     section.classList.remove('hidden');
     
-    currentSelectedLetter = null;
     const list = document.getElementById('alphabet-list');
     if (list) {
         const labelText = isGreek ? convertToGreek("Köken: " + originName) : ("Köken: " + originName);
@@ -458,12 +486,19 @@ function renderAlphabet() {
         const isActive = currentSelectedLetter === harf;
         btn.className = `w-10 h-10 flex items-center justify-center font-bold rounded transition-all select-none ${isActive ? 'bg-primary text-white shadow-md scale-110' : 'bg-subtle-light/50 dark:bg-subtle-dark hover:bg-primary hover:text-white'}`;
         btn.innerText = isGreek ? convertToGreek(harf) : harf;
-        btn.onclick = () => { currentSelectedLetter = harf; document.getElementById('result').innerHTML = ''; renderAlphabet(); showLetterResults(harf, 0); };
+        btn.onclick = () => { 
+            currentSelectedLetter = harf; 
+            currentLetterPage = 0;
+            document.getElementById('result').innerHTML = ''; 
+            renderAlphabet(); 
+            showLetterResults(harf, 0); 
+        };
         list.appendChild(btn);
     });
 }
 
 function showLetterResults(harf, page, showAll = false) {
+    currentLetterPage = page;
     const resultsDiv = document.getElementById('letter-results'); const pagDiv = document.getElementById('alphabet-pagination');
     resultsDiv.innerHTML = ""; pagDiv.innerHTML = "";
     const filtered = allWords.filter(w => w.Sözcük && normalizeString(w.Sözcük).startsWith(normalizeString(harf))).sort((a,b) => a.Sözcük.localeCompare(b.Sözcük, 'tr'));
