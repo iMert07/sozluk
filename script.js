@@ -6,14 +6,16 @@ let currentSelectedLetter = null;
 let sortConfig = { key: 'harf', direction: 'asc' }; 
 let etySortConfig = { key: 'label', direction: 'asc' }; 
 let activeOriginFilter = null;
+let activeTypeConfig = null; // { type: "Canlı", title: "Canlılar" } vb.
 let searchHistory = JSON.parse(localStorage.getItem('orum_history')) || [];
 
 const PAGE_SIZE = 36;
 const customAlphabet = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVXYZ".split("");
-const latinToGreekMap = { "a":"Α","A":"Α", "b":"Β","B":"Β", "c":"J","C":"J", "ç":"C","Ç":"C", "d":"D","D":"D", "e":"Ε","E":"Ε", "f":"F","F":"F", "g":"G","G":"G", "ğ":"Γ","Ğ":"Γ", "h":"Η","H":"Η", "ı":"Ь","I":"Ь", "i":"Ͱ","İ":"Ͱ", "j":"Σ","J":"Σ", "k":"Κ","Κ":"Κ", "l":"L","L":"L", "m":"Μ","M":"Μ", "n":"Ν","N":"Ν", "o":"Q","O":"Q", "ö":"Ω","Ö":"Ω", "p":"Π","P":"Π", "r":"Ρ","R":"Ρ", "s":"S","S":"S", "ş":"Ш","Ş":"Ш", "t":"Τ","T":"Τ", "u":"U","U":"U", "ü":"Υ","Ü":"Υ", "v":"V","V":"V", "x":"Ψ","X":"Ψ", "y":"R","Y":"R", "z":"Ζ","Z":"Z" };
+const latinToGreekMap = { "a":"Α","A":"Α", "b":"Β","B":"Β", "c":"J","C":"J", "ç":"C","Ç":"C", "d":"D","D":"D", "e":"Ε","E":"Ε", "f":"F","F":"F", "g":"G","G":"G", "ğ":"Γ","Ğ":"Γ", "h":"Η","H":"Η", "ı":"Ь","I":"Ь", "i":"Ͱ","İ":"Ͱ", "j":"Σ","J":"Σ", "k":"Κ","Κ":"Κ", "l":"L","L":"L", "m":"Μ","M":"Μ", "n":"Ν","N":"Ν", "o":"Q","O":"Q", "ö":"Ω","Ö":"Ω", "p":"Π","P":"Π", "r":"Ρ","R":"Ρ", "s":"S","S":"S", "ş":"Ш","Ş":"Ш", "t":"Τ","T":"Τ", "u":"U","U":"U", "ü":"Υ","Ü":"Y", "v":"V","V":"V", "x":"Ψ","X":"Ψ", "y":"R","Y":"R", "z":"Ζ","Z":"Z" };
 const translations = { 
     'tr': { 
-        'title': 'Orum Dili', 'nav_words': 'Kelimeler', 'nav_stats': 'Harf Dağılımı', 'nav_ety': 'Köken Dağılımı',
+        'title': 'Orum Dili', 'nav_stats': 'Harf Dağılımı', 'nav_ety': 'Köken Dağılımı',
+        'nav_canlilar': 'Canlılar', 'nav_renkler': 'Renkler', 'nav_fiiller': 'Fiiller',
         'about_page_text': 'Çeviri', 'feedback_button_text': 'Geri Bildirim', 
         'search_placeholder': 'Kelime ara...', 'about_title': 'Hoş Geldiniz', 
         'about_text_1': 'Bu sözlük, Orum Diline ait kelimeleri ve kökenlerini keşfetmeniz için hazırlanmıştır. Bu dil, Anadolu Türkçesinin özleştirilmesiyle ve kolaylaştırılmasıyla ve ayrıca Azerbaycan Türkçesinden esintilerle oluşturulan yapay bir dildir. Amacım, dilimizin öz zenginliğini kanıtlamaktır. Ancak yapay etkiler görebileceğinizi de unutmayın.',
@@ -70,6 +72,8 @@ function initButtons() {
         if (!document.getElementById('alphabet-section').classList.contains('hidden')) {
             if (activeOriginFilter) {
                 showEtymologyWordList(activeOriginFilter, 0);
+            } else if (activeTypeConfig) {
+                showTypeWordList(activeTypeConfig.type, activeTypeConfig.title, 0);
             } else if (currentSelectedLetter) {
                 renderAlphabet();
                 showLetterResults(currentSelectedLetter, 0);
@@ -185,6 +189,7 @@ function selectWord(wordData, pText, forceNoHistory = false, subText = null, fro
 
 function hideAllSections() {
     activeOriginFilter = null;
+    activeTypeConfig = null;
     ['welcome-box', 'random-word-card', 'stats-card', 'alphabet-section', 'stats-section', 'ety-section'].forEach(id => {
         document.getElementById(id)?.classList.add('hidden');
     });
@@ -221,6 +226,69 @@ function showEtyPage() {
     hideAllSections(); 
     document.getElementById('ety-section').classList.remove('hidden'); 
     renderEtymologyStats(); 
+}
+
+function showCanlilarPage() {
+    showTypeWordList("Canlı", "Canlılar", 0);
+}
+
+function showRenklerPage() {
+    showTypeWordList("Renk", "Renkler", 0);
+}
+
+function showFiillerPage() {
+    showTypeWordList("Fiil", "Fiiller", 0);
+}
+
+function showTypeWordList(targetType, titleName, page = 0) {
+    activeTypeConfig = { type: targetType, title: titleName };
+    hideAllSections();
+    const section = document.getElementById('alphabet-section');
+    section.classList.remove('hidden');
+    
+    currentSelectedLetter = null;
+    const list = document.getElementById('alphabet-list');
+    if (list) {
+        const labelText = isGreek ? convertToGreek(titleName) : titleName;
+        list.innerHTML = `<div class="col-span-full py-2 px-4 text-center font-bold text-primary text-lg flex flex-wrap items-center justify-center gap-4"><span>${labelText}</span></div>`;
+    }
+    
+    const resultsDiv = document.getElementById('letter-results'); 
+    const pagDiv = document.getElementById('alphabet-pagination');
+    resultsDiv.innerHTML = ""; 
+    pagDiv.innerHTML = "";
+
+    const filtered = allWords.filter(w => {
+        if (!w.Sözcük || w.Sözcük.trim() === "") return false;
+        const wordType = w.Tür ? w.Tür.trim() : "";
+        return normalizeString(wordType).includes(normalizeString(targetType));
+    }).sort((a,b) => a.Sözcük.localeCompare(b.Sözcük, 'tr'));
+
+    const start = page * PAGE_SIZE; 
+    const end = start + PAGE_SIZE;
+    filtered.slice(start, end).forEach(item => {
+        const b = document.createElement('button'); 
+        b.className = "text-left p-3 rounded bg-white/5 border border-subtle-light dark:border-subtle-dark hover:border-primary transition-all truncate font-semibold text-sm select-none text-foreground-light dark:text-foreground-dark shadow-sm";
+        b.innerText = isGreek ? convertToGreek(item.Sözcük) : item.Sözcük;
+        b.onclick = () => selectWord(item, item.Sözcük, false, null, false); 
+        resultsDiv.appendChild(b);
+    });
+
+    if (filtered.length > PAGE_SIZE) {
+        pagDiv.classList.remove('hidden');
+        for (let i = 0; i < Math.ceil(filtered.length / PAGE_SIZE); i++) {
+            const pBtn = document.createElement('button'); 
+            pBtn.className = `w-10 h-10 flex items-center justify-center rounded font-bold transition-all select-none ${i === page ? 'bg-primary text-white' : 'bg-subtle-light/50 dark:bg-subtle-dark hover:bg-primary/20'}`;
+            pBtn.innerText = i + 1; 
+            pBtn.onclick = () => { 
+                showTypeWordList(targetType, titleName, i); 
+                document.getElementById('alphabet-menu').scrollIntoView({ behavior: 'smooth' }); 
+            };
+            pagDiv.appendChild(pBtn);
+        }
+    }
+    
+    section.scrollIntoView({ behavior: 'smooth' });
 }
 
 function showResult(word) {
