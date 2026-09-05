@@ -51,9 +51,11 @@
                             <h1 class="text-xl font-bold" data-key="title">Orum Dili</h1>
                         </div>
                         <nav class="hidden md:flex items-center gap-8">
-                            <a class="text-base font-medium hover:text-primary transition-colors cursor-pointer" onclick="showKelimelerPage()" data-key="nav_words">Kelimeler</a>
-                            <a class="text-base font-medium hover:text-primary transition-colors cursor-pointer" onclick="showEtyPage()" data-key="nav_ety">Köken Dağılımı</a>
                             <a class="text-base font-medium hover:text-primary transition-colors cursor-pointer" onclick="showStatsPage()" data-key="nav_stats">Harf Dağılımı</a>
+                            <a class="text-base font-medium hover:text-primary transition-colors cursor-pointer" onclick="showEtyPage()" data-key="nav_ety">Köken Dağılımı</a>
+                            <a class="text-base font-medium hover:text-primary transition-colors cursor-pointer" onclick="showCanlilarPage()" data-key="nav_canlilar">Canlılar</a>
+                            <a class="text-base font-medium hover:text-primary transition-colors cursor-pointer" onclick="showRenklerPage()" data-key="nav_renkler">Renkler</a>
+                            <a class="text-base font-medium hover:text-primary transition-colors cursor-pointer" onclick="showFiillerPage()" data-key="nav_fiiller">Fiiller</a>
                             <a class="text-base font-medium hover:text-primary transition-colors cursor-pointer" href="https://cevirici.vercel.app/" target="_blank" data-key="about_page_text">Çeviri</a>
                             <a class="text-base font-medium hover:text-primary transition-colors cursor-pointer" onclick="toggleFeedbackForm()" data-key="feedback_button_text">Geri Bildirim</a>
                         </nav>
@@ -86,9 +88,11 @@
                 </div>
             </div>
             <div id="mobile-menu" class="md:hidden hidden bg-subtle-light dark:bg-subtle-dark border-b border-subtle-light dark:border-subtle-dark py-2 px-4 shadow-md">
-                <a class="block text-base font-medium hover:text-primary transition-colors cursor-pointer px-4 py-2" onclick="showKelimelerPage(); toggleMobileMenu();" data-key="nav_words">Kelimeler</a>
-                <a class="block text-base font-medium hover:text-primary transition-colors cursor-pointer px-4 py-2" onclick="showEtyPage(); toggleMobileMenu();" data-key="nav_ety">Köken Dağılımı</a>
                 <a class="block text-base font-medium hover:text-primary transition-colors cursor-pointer px-4 py-2" onclick="showStatsPage(); toggleMobileMenu();" data-key="nav_stats">Harf Dağılımı</a>
+                <a class="block text-base font-medium hover:text-primary transition-colors cursor-pointer px-4 py-2" onclick="showEtyPage(); toggleMobileMenu();" data-key="nav_ety">Köken Dağılımı</a>
+                <a class="block text-base font-medium hover:text-primary transition-colors cursor-pointer px-4 py-2" onclick="showCanlilarPage(); toggleMobileMenu();" data-key="nav_canlilar">Canlılar</a>
+                <a class="block text-base font-medium hover:text-primary transition-colors cursor-pointer px-4 py-2" onclick="showRenklerPage(); toggleMobileMenu();" data-key="nav_renkler">Renkler</a>
+                <a class="block text-base font-medium hover:text-primary transition-colors cursor-pointer px-4 py-2" onclick="showFiillerPage(); toggleMobileMenu();" data-key="nav_fiiller">Fiiller</a>
                 <a class="block text-base font-medium hover:text-primary transition-colors cursor-pointer px-4 py-2" href="https://cevirici.vercel.app/" target="_blank" data-key="about_page_text">Çeviri</a>
                 <a class="block text-base font-medium hover:text-primary transition-colors cursor-pointer px-4 py-2" onclick="toggleFeedbackForm(); toggleMobileMenu();" data-key="feedback_button_text">Geri Bildirim</a>
             </div>
