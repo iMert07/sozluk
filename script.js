@@ -10,8 +10,8 @@ let etySortConfig = { key: 'label', direction: 'asc' };
 let activeOriginFilter = null;
 let currentOriginPage = 0;
 
-let activeTypeFilter = null; // "Canlı", "Renk", "Fiil", "Element"
-let activeTypeTitle = null;  // "Canlılar", "Renkler", "Fiiller", "Elementler"
+let activeTypeFilter = null; // "Fiil", "Canlı", "Renk", "Element"
+let activeTypeTitle = null;  // "Fiiller", "Canlılar", "Renkler", "Elementler"
 let currentTypePage = 0;
 
 let searchHistory = JSON.parse(localStorage.getItem('orum_history')) || [];
@@ -63,6 +63,7 @@ function initButtons() {
         updateThemeIcons();
     });
 
+    // Harf Çevirisi (Σ / S) Butonu - Tüm listeleri ve açık kelime kartını kusursuz korur
     document.getElementById('alphabet-toggle')?.addEventListener('click', () => {
         isGreek = !isGreek;
         document.getElementById('alphabet-toggle-latin')?.classList.toggle('hidden', isGreek);
@@ -185,10 +186,6 @@ function selectWord(wordData, pText, forceNoHistory = false, subText = null, fro
     if (!forceNoHistory) addToHistory(wordData, pText, subText);
     if (fromSearch) {
         hideAllSections();
-    } else {
-        document.getElementById('welcome-box')?.classList.add('hidden');
-        document.getElementById('random-word-card')?.classList.add('hidden');
-        document.getElementById('stats-card')?.classList.add('hidden');
     }
     showResult(wordData); 
     setTimeout(() => { document.getElementById('result')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100); 
@@ -208,6 +205,7 @@ function hideAllSections() {
 
 function showPage(pageId) {
     hideAllSections();
+    lastSelectedWord = null;
     if (pageId === 'home') {
         document.getElementById('welcome-box').classList.remove('hidden');
         document.getElementById('random-word-card').classList.remove('hidden');
@@ -219,6 +217,7 @@ function showPage(pageId) {
 
 function showKelimelerPage(letter = "A") { 
     hideAllSections(); 
+    lastSelectedWord = null;
     document.getElementById('alphabet-section').classList.remove('hidden'); 
     currentSelectedLetter = letter; 
     currentLetterPage = 0;
@@ -228,12 +227,14 @@ function showKelimelerPage(letter = "A") {
 
 function showStatsPage() { 
     hideAllSections(); 
+    lastSelectedWord = null;
     document.getElementById('stats-section').classList.remove('hidden'); 
     renderAlphabetStats(); 
 }
 
 function showEtyPage() { 
     hideAllSections(); 
+    lastSelectedWord = null;
     document.getElementById('ety-section').classList.remove('hidden'); 
     renderEtymologyStats(); 
 }
@@ -254,6 +255,7 @@ function showElementlerPage() {
     showTypeWordList("Element", "Elementler", 0);
 }
 
+// Bütün tür listelerini (Fiiller, Canlılar vb.) harf listeleriyle birebir aynı mantıkla yöneten ana fonksiyon
 function showTypeWordList(targetType, titleName, page = 0) {
     activeTypeFilter = targetType;
     activeTypeTitle = titleName;
@@ -264,9 +266,7 @@ function showTypeWordList(targetType, titleName, page = 0) {
     ['welcome-box', 'random-word-card', 'stats-card', 'stats-section', 'ety-section'].forEach(id => {
         document.getElementById(id)?.classList.add('hidden');
     });
-    const res = document.getElementById('result');
-    if(res) res.innerHTML = '';
-
+    
     const section = document.getElementById('alphabet-section');
     section.classList.remove('hidden');
     
@@ -364,9 +364,7 @@ function showEtymologyWordList(originName, page = 0) {
     ['welcome-box', 'random-word-card', 'stats-card', 'stats-section', 'ety-section'].forEach(id => {
         document.getElementById(id)?.classList.add('hidden');
     });
-    const res = document.getElementById('result');
-    if(res) res.innerHTML = '';
-
+    
     const section = document.getElementById('alphabet-section');
     section.classList.remove('hidden');
     
@@ -488,6 +486,7 @@ function renderAlphabet() {
         btn.onclick = () => { 
             currentSelectedLetter = harf; 
             currentLetterPage = 0;
+            lastSelectedWord = null;
             document.getElementById('result').innerHTML = ''; 
             renderAlphabet(); 
             showLetterResults(harf, 0); 
