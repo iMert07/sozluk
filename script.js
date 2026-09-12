@@ -10,8 +10,8 @@ let etySortConfig = { key: 'label', direction: 'asc' };
 let activeOriginFilter = null;
 let currentOriginPage = 0;
 
-let activeTypeFilter = null; // "Canlı", "Renk", "Fiil"
-let activeTypeTitle = null;  // "Canlılar", "Renkler", "Fiiller"
+let activeTypeFilter = null; 
+let activeTypeTitle = null;  
 let currentTypePage = 0;
 
 let searchHistory = JSON.parse(localStorage.getItem('orum_history')) || [];
@@ -22,7 +22,7 @@ const latinToGreekMap = { "a":"Α","A":"Α", "b":"Β","B":"Β", "c":"J","C":"J",
 const translations = { 
     'tr': { 
         'title': 'Orum Dili', 'nav_stats': 'Harf Dağılımı', 'nav_ety': 'Köken Dağılımı',
-        'nav_canlilar': 'Canlılar', 'nav_renkler': 'Renkler', 'nav_fiiller': 'Fiiller',
+        'nav_fiiller': 'Fiiller', 'nav_canlilar': 'Canlılar', 'nav_renkler': 'Renkler', 'nav_elementler': 'Elementler',
         'about_page_text': 'Çeviri', 'feedback_button_text': 'Geri Bildirim', 
         'search_placeholder': 'Kelime ara...', 'about_title': 'Hoş Geldiniz', 
         'about_text_1': 'Bu sözlük, Orum Diline ait kelimeleri ve kökenlerini keşfetmeniz için hazırlanmıştır. Bu dil, Anadolu Türkçesinin özleştirilmesiyle ve kolaylaştırılmasıyla ve ayrıca Azerbaycan Türkçesinden esintilerle oluşturulan yapay bir dildir. Amacım, dilimizin öz zenginliğini kanıtlamaktır. Ancak yapay etkiler görebileceğinizi de unutmayın.',
@@ -191,7 +191,7 @@ function selectWord(wordData, pText, forceNoHistory = false, subText = null, fro
         document.getElementById('stats-card')?.classList.add('hidden');
     }
     showResult(wordData); 
-    setTimeout(() => { document.getElementById('result')?.scrollIntoView({ behavior: 'smooth' }); }, 100); 
+    setTimeout(() => { document.getElementById('result')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100); 
 }
 
 function hideAllSections() {
@@ -238,6 +238,10 @@ function showEtyPage() {
     renderEtymologyStats(); 
 }
 
+function showFiillerPage() {
+    showTypeWordList("Fiil", "Fiiller", 0);
+}
+
 function showCanlilarPage() {
     showTypeWordList("Canlı", "Canlılar", 0);
 }
@@ -246,8 +250,8 @@ function showRenklerPage() {
     showTypeWordList("Renk", "Renkler", 0);
 }
 
-function showFiillerPage() {
-    showTypeWordList("Fiil", "Fiiller", 0);
+function showElementlerPage() {
+    showTypeWordList("Element", "Elementler", 0);
 }
 
 function showTypeWordList(targetType, titleName, page = 0) {
