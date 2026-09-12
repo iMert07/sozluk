@@ -10,8 +10,8 @@ let etySortConfig = { key: 'label', direction: 'asc' };
 let activeOriginFilter = null;
 let currentOriginPage = 0;
 
-let activeTypeFilter = null; 
-let activeTypeTitle = null;  
+let activeTypeFilter = null; // "Canlı", "Renk", "Fiil", "Element"
+let activeTypeTitle = null;  // "Canlılar", "Renkler", "Fiiller", "Elementler"
 let currentTypePage = 0;
 
 let searchHistory = JSON.parse(localStorage.getItem('orum_history')) || [];
@@ -273,7 +273,8 @@ function showTypeWordList(targetType, titleName, page = 0) {
     const list = document.getElementById('alphabet-list');
     if (list) {
         const labelText = isGreek ? convertToGreek(titleName) : titleName;
-        list.innerHTML = `<div class="col-span-full py-2 px-4 text-center font-bold text-primary text-lg flex flex-wrap items-center justify-center gap-4"><span>${labelText}</span></div>`;
+        const backText = isGreek ? convertToGreek("Geri Dön") : "Geri Dön";
+        list.innerHTML = `<div class="col-span-full py-2 px-4 text-center font-bold text-primary text-lg flex flex-wrap items-center justify-center gap-4"><span>${labelText}</span><button onclick="showPage('home')" class="text-xs bg-muted-light/20 px-3 py-1 rounded-lg hover:bg-primary hover:text-white transition-colors">${backText}</button></div>`;
     }
     
     const resultsDiv = document.getElementById('letter-results'); 
@@ -305,13 +306,10 @@ function showTypeWordList(targetType, titleName, page = 0) {
             pBtn.innerText = i + 1; 
             pBtn.onclick = () => { 
                 showTypeWordList(targetType, titleName, i); 
-                document.getElementById('alphabet-menu').scrollIntoView({ behavior: 'smooth' }); 
             };
             pagDiv.appendChild(pBtn);
         }
     }
-    
-    section.scrollIntoView({ behavior: 'smooth' });
 }
 
 function showResult(word) {
@@ -415,13 +413,10 @@ function showEtymologyWordList(originName, page = 0) {
             pBtn.innerText = i + 1; 
             pBtn.onclick = () => { 
                 showEtymologyWordList(originName, i); 
-                document.getElementById('alphabet-menu').scrollIntoView({ behavior: 'smooth' }); 
             };
             pagDiv.appendChild(pBtn);
         }
     }
-    
-    section.scrollIntoView({ behavior: 'smooth' });
 }
 
 function setEtySort(key) { etySortConfig.key = key; renderEtymologyStats(); }
@@ -518,7 +513,7 @@ function showLetterResults(harf, page, showAll = false) {
         if (!showAll && filtered.length > PAGE_SIZE) {
             for (let i = 0; i < Math.ceil(filtered.length / PAGE_SIZE); i++) {
                 const pBtn = document.createElement('button'); pBtn.className = `w-10 h-10 flex items-center justify-center rounded font-bold transition-all select-none ${i === page ? 'bg-primary text-white' : 'bg-subtle-light/50 dark:bg-subtle-dark hover:bg-primary/20'}`;
-                pBtn.innerText = i + 1; pBtn.onclick = () => { showLetterResults(harf, i); document.getElementById('alphabet-menu').scrollIntoView({ behavior: 'smooth' }); };
+                pBtn.innerText = i + 1; pBtn.onclick = () => { showLetterResults(harf, i); };
                 pagDiv.appendChild(pBtn);
             }
         }
