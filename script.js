@@ -336,7 +336,7 @@ function showResult(word) {
             <div class="p-4 sm:p-6">
                 <div class="mb-5">
                     <h2 class="text-4xl font-bold text-primary">${convert(word.Sözcük)}</h2>
-                    ${bilimselText ? `<p class="text-base text-muted-light dark:text-muted-dark opacity-70 mt-1">${convert(bilimselText)}</p>` : ''}
+                    ${bilimselText ? `<p class="text-base text-muted-light dark:text-muted-dark opacity-70 mt-1">${bilimselText}</p>` : ''}
                     ${word.Tür ? `<p class="text-sm opacity-60 mt-0.5">${convert(word.Tür)}</p>` : ''}
                 </div>
                 <hr class="border-t border-subtle-light dark:border-subtle-dark my-5">
